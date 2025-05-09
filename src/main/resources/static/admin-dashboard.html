@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="dashboard">
+    <h2>Admin Dashboard</h2>
+
+    <button onclick="viewAllCustomers()">View All Customers</button>
+    <br><br>
+
+    <input type="number" id="delete-id" placeholder="Enter Customer ID to Delete">
+    <button onclick="deleteCustomerById()">Delete Customer</button>
+
+    <div id="output" class="customer-info" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+    const baseURL = "http://localhost:8080/customer";
+
+    async function viewAllCustomers() {
+        const res = await fetch(`${baseURL}/all`);
+        const customers = await res.json();
+
+        let html = "<h3>Customer List:</h3>";
+        customers.forEach(c => {
+            html += `ID: ${c.id}, Name: ${c.name}, Email: ${c.email}<br>`;
+        });
+        document.getElementById("output").innerHTML = html;
+    }
+
+    async function deleteCustomerById() {
+        const id = document.getElementById("delete-id").value;
+        if (!id) {
+            alert("Please enter a customer ID.");
+            return;
+        }
+
+        const res = await fetch(`${baseURL}/delete/${id}`, { method: "DELETE" });
+        if (res.ok) {
+            alert("Customer deleted successfully.");
+            viewAllCustomers(); // refresh list
+        } else {
+            alert("Customer not found.");
+        }
+    }
+</script>
+</body>
+</html>
