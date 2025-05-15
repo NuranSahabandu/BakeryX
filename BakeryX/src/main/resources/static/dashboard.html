@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="showDashboard()">
+
+<div id="logo-container">
+    <img src="logo-transparent.png" alt="Logo" id="logo">
+</div>
+
+<div class="dashboard">
+    <h2>Welcome to Your Dashboard</h2>
+    <div class="customer-info" id="user-info"></div>
+
+    <hr style="margin: 30px 0; border-color: #ffcccc;">
+    <h3>Update Your Details</h3>
+    <form onsubmit="updateUser(event)">
+        <input type="text" id="update-name" placeholder="New Name" required>
+        <input type="email" id="update-email" placeholder="New Email" required>
+        <input type="password" id="update-password" placeholder="New Password" required>
+        <button type="submit" style="background-color: black;">Update Info</button>
+    </form>
+
+    <button id="logout-btn" style="margin-top: 20px; background-color: black;">Logout</button>
+
+    <hr style="margin: 30px 0; border-color: #ffcccc;">
+
+    <h3>Delete your account</h3>
+
+    <button onclick="deleteUser()" style="background-color: #ff4d4d; margin-top: 10px;">Delete Account</button>
+
+</div>
+
+
+<div style="position: absolute; top: 60px; right: 20px;">
+    <button onclick="goToShoppingCart()" class="small-side-button">
+        My shopping Cart
+    </button>
+    <button onclick="goToCakeBooking()" class="small-side-button">
+        Cake Booking
+    </button>
+    <button onclick="goToBakeryProducts()" class="small-side-button">
+        View Bakery Products
+    </button>
+    <button onclick="goToRateUs()" class="small-side-button">
+        Rate Us
+    </button>
+    <button onclick="other()" class="small-side-button" style="margin-bottom: 0;">
+        Other
+    </button>
+</div>
+
+
+
+<script>
+    function goToCakeBooking() {
+        window.location.href = "/cake-booking";
+    }
+
+    function goToShoppingCart() {
+        window.location.href = "/shopping-cart";
+    }
+
+    function goToBakeryProducts() {
+        window.location.href = "/products";
+    }
+    function goToRateUs() {
+        window.location.href = "/rate-us";
+    }
+    function other(){
+        window.location.href = "/other";
+    }
+</script>
+
+
+<script src="script.js"></script>
+</body>
+</html>
