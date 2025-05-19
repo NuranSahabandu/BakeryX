@@ -13,7 +13,8 @@
 
 <div class="dashboard">
     <h2>Admin Dashboard</h2>
-
+    <button onclick="goToOrdersPage()">Manage Orders</button>
+    <br><br>
     <button onclick="getAllUsers()">Get All Users</button>
     <br><br>
 
@@ -25,6 +26,12 @@
 
     <button id="logout-btn" style="margin-top: 20px; background-color: #ff9966;">Logout</button>
 </div>
+<script>
+    function goToOrdersPage() {
+        window.location.href = "/orders.html";
+    }
+</script>
+
 
 <script src="script.js"></script>
 </body>
