@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orders</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8c291;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fff2e6;
+        }
+
+        select, button {
+            padding: 5px;
+        }
+
+        #save-btn {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #f8c291;
+            border: none;
+            cursor: pointer;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <h2 style="text-align: center;">ORDERS</h2>
+
+    <!-- Filter Menu -->
+    <div style="text-align: center; margin: 20px;">
+        <label for="filter">Filter Orders:</label>
+        <select id="filter" onchange="applyFilter()">
+            <option value="pending" selected>Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="declined">Declined</option>
+        </select>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Item</th>
+            <th>Status</th>
+            <th id="timestamp-header">Order Placed Time</th>
+            <th id="pickup-header" style="display: none;">Pickup Time</th>
+        </tr>
+        </thead>
+        <tbody id="order-body"></tbody>
+    </table>
+
+    <!-- Save Button -->
+    <div style="text-align: center;">
+        <button id="save-btn" onclick="saveChanges()">Save Changes</button>
+    </div>
+</div>
+
+<script>
+    let originalStatuses = {};
+    let modifiedOrders = new Set();
+
+    async function fetchOrders() {
+        originalStatuses = {};
+        modifiedOrders.clear();
+        toggleSaveButton();
+
+        document.getElementById("filter").value = "pending";
+        await applyFilter();
+    }
+
+    async function applyFilter() {
+        const selectedFilter = document.getElementById("filter").value;
+        const tbody = document.getElementById("order-body");
+        tbody.innerHTML = "";
+
+        const res = await fetch(`http://localhost:8080/orders/status/${selectedFilter}`);
+        const filteredOrders = await res.json();
+
+        filteredOrders.forEach(order => {
+            originalStatuses[order.id] = order.status;
+
+            const row = document.createElement("tr");
+
+            // Convert order.timestamp
+            let orderTime = "Invalid Date";
+            if (Array.isArray(order.timestamp)) {
+                const [year, month, day, hour, minute, second] = order.timestamp;
+                const jsDate = new Date(year, month - 1, day, hour, minute, second);
+                orderTime = jsDate.toLocaleString();
+            }
+
+            // Convert pickupTime (ISO 8601 string)
+            let pickupTime = "";
+            if (selectedFilter === "accepted" && typeof order.pickupTime === "string") {
+                const pickupDate = new Date(order.pickupTime);
+                if (!isNaN(pickupDate)) {
+                    pickupTime = pickupDate.toLocaleString();
+                }
+            }
+
+            row.innerHTML = `
+                <td>${order.customerName}</td>
+                <td>${order.item}</td>
+                <td>
+                    <select id="status-${order.id}" onchange="handleChange(${order.id})">
+                        <option value="pending" ${order.status === "pending" ? "selected" : ""}>Pending</option>
+                        <option value="accepted" ${order.status === "accepted" ? "selected" : ""}>Accepted</option>
+                        <option value="declined" ${order.status === "declined" ? "selected" : ""}>Declined</option>
+                    </select>
+                </td>
+                <td>${orderTime}</td>
+                <td class="pickup-cell" style="display: ${selectedFilter === "accepted" ? 'table-cell' : 'none'};">${pickupTime}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Toggle column visibility
+        document.getElementById("timestamp-header").style.display = selectedFilter === "pending" ? "table-cell" : "none";
+        document.getElementById("pickup-header").style.display = selectedFilter === "accepted" ? "table-cell" : "none";
+
+        document.querySelectorAll("tbody tr").forEach(row => {
+            row.children[3].style.display = selectedFilter === "pending" ? "table-cell" : "none";
+            if (row.children[4]) {
+                row.children[4].style.display = selectedFilter === "accepted" ? "table-cell" : "none";
+            }
+        });
+    }
+
+    function handleChange(orderId) {
+        const currentValue = document.getElementById(`status-${orderId}`).value;
+        if (currentValue !== originalStatuses[orderId]) {
+            modifiedOrders.add(orderId);
+        } else {
+            modifiedOrders.delete(orderId);
+        }
+        toggleSaveButton();
+    }
+
+    function toggleSaveButton() {
+        const btn = document.getElementById("save-btn");
+        btn.style.display = modifiedOrders.size > 0 ? "block" : "none";
+    }
+
+    async function saveChanges() {
+        for (const orderId of modifiedOrders) {
+            const newStatus = document.getElementById(`status-${orderId}`).value;
+            await fetch(`http://localhost:8080/orders/${orderId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+        }
+
+        alert("Order status updated!");
+        fetchOrders();
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchOrders);
+</script>
+
+</body>
+</html>
