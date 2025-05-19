@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cake Order System</title>
+    <link rel="stylesheet" href="style1.css">
+
+</head>
+<body>
+<h1>Cake Orders</h1>
+
+<div class="controls">
+    <input type="text" id="searchInput" placeholder="Search by flavor or shape">
+    <button onclick="searchOrders()">Search</button>
+    <button onclick="loadOrders()">Refresh</button>
+
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Flavor</th>
+        <th>Shape</th>
+        <th>Message</th>
+        <th>Delivery Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="order-table-body"></tbody>
+</table>
+
+<h2>Add / Update Order</h2>
+<form id="orderForm">
+    <input type="hidden" id="orderId">
+    <input type="text" id="flavor" placeholder="Flavor" required>
+    <input type="text" id="shape" placeholder="Shape" required>
+    <input type="text" id="message" placeholder="Message">
+    <input type="date" id="deliveryDate" required>
+    <input type="text" id="status" placeholder="Status" required>
+    <button type="submit">Save Order</button>
+</form>
+
+<p id="loading" style="display:none;">Loading...</p>
+<p id="error" class="error"></p>
+
+<script src="script1.js"></script>
+</body>
+</html>
