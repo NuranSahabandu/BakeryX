@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Review - BakeryX</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            background-color: #fdf6f0;
+            font-family: 'Playfair Display', serif;
+            color: #5c4033;
+        }
+        .form-container {
+            background: linear-gradient(145deg, #ffffff, #f8e1d9);
+            border: 2px solid #d4a373;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+        input, button {
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #d4a373;
+            box-shadow: 0 0 8px rgba(212, 163, 115, 0.3);
+            outline: none;
+        }
+        button {
+            background: #d4a373;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            background: #b88a5e;
+            transform: scale(1.05);
+        }
+        .title {
+            color: #5c4033;
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .input-field {
+            background: #fff;
+            border: 1px solid #e0c4a8;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            color: #5c4033;
+        }
+        .input-field::placeholder {
+            color: #a68a7a;
+            font-style: italic;
+        }
+        .input-field:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+<div class="form-container max-w-md w-full p-8">
+    <h2 class="title text-4xl text-center mb-6">Edit Customer Review</h2>
+    <div class="space-y-4">
+        <input id="id" class="input-field w-full" placeholder="Review ID" disabled>
+        <input id="name" class="input-field w-full" placeholder="Customer Name" required>
+        <input id="product" class="input-field w-full" placeholder="Pastry or Product" required>
+        <input id="message" class="input-field w-full" placeholder="Review Message" required>
+        <button onclick="editReview()" class="w-full">Update Review</button>
+    </div>
+</div>
+
+<script>
+    function getParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById('id').value = urlParams.get('id') || '';
+        document.getElementById('name').value = urlParams.get('name') || '';
+        document.getElementById('product').value = urlParams.get('product') || '';
+        document.getElementById('message').value = urlParams.get('message') || '';
+    }
+
+    function editReview() {
+        const review = {
+            id: document.getElementById('id').value,
+            customerName: document.getElementById('name').value,
+            product: document.getElementById('product').value,
+            message: document.getElementById('message').value
+        };
+        fetch('/api/reviews', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(review)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update review');
+                alert('Review Updated Successfully!');
+                window.location.href = '/admin-review.html';
+            })
+            .catch(error => {
+                alert('Failed to update review. Please try again.');
+                console.error(error);
+            });
+    }
+
+    window.onload = getParams;
+</script>
+</body>
+</html>
