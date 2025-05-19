@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Profile</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Staff Profile</h1>
+    <form id="update-profile-form">
+        <input type="hidden" name="id" />
+        <label>Name: <input type="text" name="name" required /></label><br/>
+        <label>Email: <input type="email" name="email" required /></label><br/>
+        <label>Role: <input type="text" name="role" readonly /></label><br/>
+        <input type="submit" value="Update" />
+    </form>
+    <a class="link" href="/staff-dashboard.html">Back to Dashboard</a>
+</div>
+</body>
+</html>

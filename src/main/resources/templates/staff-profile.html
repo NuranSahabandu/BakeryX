@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+    <title>Staff Profile</title>
+</head>
+<body>
+<h1>Staff Profile</h1>
+<form th:action="@{/staff/update}" th:object="${staff}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <label>Name: <input type="text" th:field="*{name}" /></label><br/>
+    <label>Email: <input type="email" th:field="*{email}" /></label><br/>
+    <label>Role: <input type="text" th:field="*{role}" readonly /></label><br/>
+    <button type="submit">Update</button>
+</form>
+<a th:href="@{/staff/dashboard}">Back to Dashboard</a>
+</body>
+</html>

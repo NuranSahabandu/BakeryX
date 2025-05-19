@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Admin Panel - Staff Management</h1>
+    <h2>Add New Staff</h2>
+    <form id="add-staff-form">
+        <label>Name: <input type="text" name="name" required /></label><br/>
+        <label>Email: <input type="email" name="email" required /></label><br/>
+        <label>Role:
+            <select name="role">
+                <option value="ADMIN">Admin</option>
+                <option value="BAKER">Baker</option>
+                <option value="DELIVERY">Delivery</option>
+            </select>
+        </label><br/>
+        <input type="submit" value="Add Staff" />
+    </form>
+    <h2>Staff List</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Assign Role</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody id="admin-staff-table-body">
+        <!-- Data will be loaded by JS or server-side include -->
+        </tbody>
+    </table>
+    <a class="link" href="/staff-dashboard.html">Back to Dashboard</a>
+</div>
+</body>
+</html>

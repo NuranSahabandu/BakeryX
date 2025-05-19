@@ -1,0 +1,8 @@
+# Each line: id,name,email,role
+1,Admin User,admin@bakery.com,ADMIN
+2,Baker User,baker@bakery.com,BAKER
+3,Delivery User,delivery@bakery.com,DELIVERY
+4,apj,testa@gmail.com,DELIVERY
+5,Delivery User,xsheepxr8@jexpad.com,BAKER
+6,Delivery User,xsheepxr8@jexpad.com,ADMIN
+7,Test,testa@gmail.com,BAKER
