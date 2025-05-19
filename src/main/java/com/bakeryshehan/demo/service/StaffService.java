@@ -2,18 +2,36 @@ package com.bakeryshehan.demo.service;
 
 import com.bakeryshehan.demo.model.*;
 import org.springframework.stereotype.Service;
+import jakarta.annotation.PostConstruct;
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 @Service
 public class StaffService {
-    private static final String STAFF_FILE = "src/main/resources/staff.txt";
+    private final Path dataFilePath;
+
+    public StaffService() {
+        // Initialize the data file path in user's home directory
+        String userHome = System.getProperty("user.home");
+        Path dataDir = Paths.get(userHome, "bakery-data");
+        this.dataFilePath = dataDir.resolve("staff.txt");
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
+        // Create directories and file if they don't exist
+        Files.createDirectories(dataFilePath.getParent());
+        if (!Files.exists(dataFilePath)) {
+            Files.writeString(dataFilePath, "# Each line: id,name,email,role\n");
+        }
+    }
 
     public List<Staff> getAllStaff() {
         List<Staff> staffList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(STAFF_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
+        try {
+            List<String> lines = Files.readAllLines(dataFilePath);
+            for (String line : lines) {
                 if (line.trim().isEmpty() || line.startsWith("#")) {
                     continue;
                 }
@@ -40,9 +58,13 @@ public class StaffService {
     }
 
     public void addStaff(Staff staff) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(STAFF_FILE, true))) {
-            bw.write(staff.getId() + "," + staff.getName() + "," + staff.getEmail() + "," + staff.getRole());
-            bw.newLine();
+        try {
+            String staffEntry = String.format("%s,%s,%s,%s%n",
+                staff.getId(),
+                staff.getName(),
+                staff.getEmail(),
+                staff.getRole());
+            Files.writeString(dataFilePath, staffEntry, StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,15 +72,19 @@ public class StaffService {
 
     public void updateStaff(Staff updatedStaff) {
         List<Staff> staffList = getAllStaff();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(STAFF_FILE))) {
-            bw.write("# Each line: id,name,email,role\n");
+        try {
+            StringBuilder content = new StringBuilder("# Each line: id,name,email,role\n");
             for (Staff staff : staffList) {
                 if (staff.getId().equals(updatedStaff.getId())) {
                     staff = updatedStaff;
                 }
-                bw.write(staff.getId() + "," + staff.getName() + "," + staff.getEmail() + "," + staff.getRole());
-                bw.newLine();
+                content.append(String.format("%s,%s,%s,%s%n",
+                    staff.getId(),
+                    staff.getName(),
+                    staff.getEmail(),
+                    staff.getRole()));
             }
+            Files.writeString(dataFilePath, content.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,23 +92,27 @@ public class StaffService {
 
     public void deleteStaff(String id) {
         List<Staff> staffList = getAllStaff();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(STAFF_FILE))) {
-            bw.write("# Each line: id,name,email,role\n");
+        try {
+            StringBuilder content = new StringBuilder("# Each line: id,name,email,role\n");
             for (Staff staff : staffList) {
                 if (!staff.getId().equals(id)) {
-                    bw.write(staff.getId() + "," + staff.getName() + "," + staff.getEmail() + "," + staff.getRole());
-                    bw.newLine();
+                    content.append(String.format("%s,%s,%s,%s%n",
+                        staff.getId(),
+                        staff.getName(),
+                        staff.getEmail(),
+                        staff.getRole()));
                 }
             }
+            Files.writeString(dataFilePath, content.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public Staff getStaffById(String id) {
-        for (Staff staff : getAllStaff()) {
-            if (staff.getId().equals(id)) return staff;
-        }
-        return null;
+        return getAllStaff().stream()
+                .filter(staff -> staff.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 }
